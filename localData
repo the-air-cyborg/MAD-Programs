@@ -1,0 +1,63 @@
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editTextFileName, editTextData;
+    Button saveButton, readButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextFileName = findViewById(R.id.editText1);
+        editTextData = findViewById(R.id.editText2);
+        saveButton = findViewById(R.id.button1);
+        readButton = findViewById(R.id.button2);
+
+        // Save data to file
+        saveButton.setOnClickListener(v -> {
+            String filename = editTextFileName.getText().toString();
+            String data = editTextData.getText().toString();
+
+            try {
+                FileOutputStream fos = openFileOutput(filename, Context.MODE_PRIVATE);
+                fos.write(data.getBytes());
+                fos.close();
+                Toast.makeText(getApplicationContext(), "Saved: " + filename, Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Read data from file
+        readButton.setOnClickListener(v -> {
+            String filename = editTextFileName.getText().toString();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput(filename)));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Toast.makeText(getApplicationContext(), stringBuilder.toString(), Toast.LENGTH_LONG).show();
+        });
+    }
+}
